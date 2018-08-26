@@ -55,9 +55,12 @@ function Invoke-PublishSymbols {
             # Default the artifact name.
             $ArtifactName = Get-ArtifactName -ArtifactName $ArtifactName -LastTransactionId $lastTransactionId
 
-            # Create the artifact.
-            Write-VstsAssociateArtifact -Name $ArtifactName -Path $Share -Type 'SymbolStore' -Properties @{
-                TransactionId = $lastTransactionId
+            $hostType = Get-VstsTaskVariable -Name 'System.Hosttype' -Require
+            if ($hostType -ieq "build") {
+                # Create the artifact.
+                Write-VstsAssociateArtifact -Name $ArtifactName -Path $Share -Type 'SymbolStore' -Properties @{
+                    TransactionId = $lastTransactionId
+                }
             }
         } finally {
             # Delete the temporary response file.
